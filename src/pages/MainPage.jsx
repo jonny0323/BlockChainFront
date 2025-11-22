@@ -1,0 +1,314 @@
+import React, { useState, useEffect } from 'react';  // ✅ useEffect 추가
+import { FaTwitter, FaYoutube, FaDiscord } from 'react-icons/fa';
+import { FiPlus, FiCheckCircle } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import ResolveBetPage from './ResolveBetPage'; 
+import WalletPage from './WalletPage';
+import { getWallet, handleLogout, isLoggedIn, getMainData } from '../services/api.js'
+
+// 기본 색상 및 스타일 변수
+const styles = {
+    bitcoin : '#ff9900',
+    primaryColor: '#5c6bc0',
+    secondaryColor: '#4caf50',
+    dangerColor: '#f44336',
+    bgColor: '#f4f7f9',
+    cardBgColor: 'white',
+    padding: '40px 5%',
+    maxWidth: '1200px',
+    headerHeight: '80px',
+};
+
+const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
+    padding: padding,
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: backgroundColor,
+    color: color,
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+});
+
+// ✅ Header에 balance props 추가
+const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) => ( 
+    <header style={{
+        backgroundColor: styles.cardBgColor,
+        color: '#333',
+        padding: '0 5%',
+        height: styles.headerHeight,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: '1px solid #eee',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+    }}>
+        <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', fontSize: '24px' }}>
+            <span style={{ color: styles.bitcoin, marginRight: '10px' }}>₿</span>
+            Betting DApp
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <Link to="/Create" style={{ textDecoration: 'none' }}>
+                <button style={{ ...buttonStyle(styles.primaryColor, 'white', '8px 15px') }}>
+                    <FiPlus style={{ marginRight: '5px' }} /> Create
+                </button>
+            </Link>
+            
+            <button 
+                style={{ ...buttonStyle(styles.secondaryColor, 'white', '8px 15px') }}
+                onClick={onResolveClick}
+            >
+                <FiCheckCircle style={{ marginRight: '5px' }} /> 확정시키기
+            </button>
+            
+            {/* ✅ 실제 잔액 표시 */}
+            <button 
+                style={{
+                    padding: '8px 15px',
+                    borderRadius: '8px',
+                    border: `1px solid ${styles.primaryColor}`,
+                    backgroundColor: 'transparent',
+                    color: styles.primaryColor,
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                }}
+                onClick={() => {
+                    onWalletClick();
+                    onRefreshBalance();  // ✅ 지갑 열 때 잔액 갱신
+                }}
+            >내 지갑 : 
+                {balance !== null ? `${balance.toFixed(2)} MATIC` : '로딩 중...'}
+            </button>
+
+            <button 
+                style={{ ...buttonStyle('#ccc', 'black', '8px 15px') }}
+                onClick={handleLogout}
+            >
+                Logout
+            </button>
+        </div>
+    </header>
+);
+
+// Betting Card Component (동일)
+const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, totalBet, status }) => (
+    <div style={{
+        backgroundColor: styles.cardBgColor,
+        padding: '20px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
+        border: '1px solid #ddd',
+        width: '30%',
+        minWidth: '350px',
+    }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
+                {date.year}년 {date.month}월 {date.day}일 {asset} {condition}
+            </h3>
+            <span style={{ color: styles.primaryColor, fontWeight: 'bold' }}>{status}</span>
+        </div>
+
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+            스마트 마감: {date.smartDeadline}
+        </p>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', textAlign: 'center' }}>
+            <div style={{ flex: 1, borderRight: '1px solid #eee' }}>
+                <p style={{ fontSize: '14px', color: '#666' }}>찬성 베팅 수익률</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.secondaryColor }}>{smartBetting.toLocaleString()}</p>
+            </div>
+            <div style={{ flex: 1, borderRight: '1px solid #eee' }}>
+                <p style={{ fontSize: '14px', color: '#666' }}>참여자 수</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>{participants.toLocaleString()}</p>
+            </div>
+            <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '14px', color: '#666' }}>총 베팅액</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.dangerColor }}>{totalBet.toLocaleString()}</p>
+            </div>
+        </div>
+        <Link to={`/detail/${idx}`} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex' }}>
+                <button 
+                    style={{ 
+                        ...buttonStyle(styles.primaryColor, 'white', '12px 0'), 
+                        flex: 1,
+                        background: `linear-gradient(90deg, ${styles.primaryColor}, #8c9eff)`
+                    }}
+                >
+                    JOIN
+                </button>
+            </div>
+        </Link>
+    </div>
+);
+
+// Betting List Section (동일)
+const BettingListSection = () => {
+    const [bets, setBets] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadBets();
+    }, []);
+
+    const loadBets = async () => {
+        try {
+            const data = await getMainData();
+            setBets(data.bets);
+        } catch (error) {
+            console.error('베팅 목록 로드 실패:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <section style={{ backgroundColor: styles.bgColor, padding: styles.padding, minHeight: 'calc(100vh - 80px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <p style={{ fontSize: '18px', color: '#666' }}>로딩 중...</p>
+            </section>
+        );
+    }
+
+    return (
+        <section style={{ backgroundColor: styles.bgColor, padding: styles.padding, minHeight: 'calc(100vh - 80px)', alignItems:'center' }}>
+            <div style={{ maxWidth: styles.maxWidth, margin: '0 auto', textAlign:'center' }}>
+                <h2 style={{ fontSize: '28px', marginBottom: '10px', color: '#333' }}>진행 중인 베팅</h2>
+                <p style={{ fontSize: '16px', marginBottom: '30px', color: '#666'}}>
+                    실시간으로 진행되는 가격 예측 베팅에 참여해보세요
+                </p>
+
+                {bets.length === 0 ? (
+                    <p style={{ fontSize: '16px', color: '#999', padding: '50px 0' }}>
+                        진행 중인 베팅이 없습니다.
+                    </p>
+                ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                        {bets.map((bet) => (
+                            <BettingCard 
+                                key={bet.idx}
+                                idx={bet.idx}
+                                asset="비트코인"
+                                condition={bet.title}
+                                date={{
+                                    year: new Date(bet.settlementTime).getFullYear(),
+                                    month: new Date(bet.settlementTime).getMonth() + 1,
+                                    day: new Date(bet.settlementTime).getDate(),
+                                    smartDeadline: new Date(bet.settlementTime).toLocaleDateString('ko-KR')
+                                }}
+                                smartBetting={parseFloat(bet.yesOdds)}
+                                participants={bet.participantCount}
+                                totalBet={parseFloat(bet.totalBetAmount)}
+                                status={bet.status}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+};
+
+
+// Footer (동일)
+const Footer = () => (
+    <footer style={{ backgroundColor: styles.cardBgColor, color: '#666', padding: '50px 5%', fontSize: '14px', borderTop: '1px solid #eee' }}>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            maxWidth: styles.maxWidth,
+            margin: '0 auto',
+            flexWrap: 'wrap',
+            gap: '30px'
+        }}>
+            <div style={{ flex: 2, minWidth: '200px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', fontSize: '20px', color: '#333', marginBottom: '10px' }}>
+                    <span style={{ color: styles.bitcoin, marginRight: '10px' }}>₿</span>
+                    Betting DApp
+                </div>
+                <p>블록체인 기반 가격 예측 베팅 플랫폼으로 안전하고 투명한 베팅 경험을 제공합니다.</p>
+            </div>
+
+            <div style={{ flex: 1, minWidth: '100px' }}>
+                <h5 style={{ color: '#333', marginBottom: '15px', fontSize: '16px' }}>자산</h5>
+                <ul style={{ listStyle: 'none', padding: 0, lineHeight: '25px' }}>
+                    <li>비트코인</li>
+                </ul>
+            </div>
+
+            <div style={{ flex: 1, minWidth: '100px' }}>
+                <h5 style={{ color: '#333', marginBottom: '15px', fontSize: '16px' }}>지원</h5>
+                <ul style={{ listStyle: 'none', padding: 0, lineHeight: '25px' }}>
+                    <li>도움말</li>
+                    <li>FAQ</li>
+                    <li>이용약관</li>
+                    <li>개인정보처리방침</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #eee' }}>
+            © 2025 Price Prediction. All rights reserved. | Powered by Leetaejoon
+        </div>
+    </footer>
+);
+
+// ✅ Main Component
+const MainPage = () => {
+    const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+    const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+    const [balance, setBalance] = useState(null);  // ✅ 잔액 상태
+
+    // ✅ 잔액 로드
+    useEffect(() => {
+        if (isLoggedIn()) {
+            loadBalance();
+        }
+    }, []);
+
+    const loadBalance = async () => {
+        try {
+            const walletData = await getWallet();
+            setBalance(parseFloat(walletData.balance || 0));
+        } catch (error) {
+            console.error('잔액 조회 실패:', error);
+            setBalance(0);
+        }
+    };
+
+    // ✅ 지갑 모달 닫을 때 잔액 갱신
+    const handleWalletClose = () => {
+        setIsWalletModalOpen(false);
+        loadBalance();  // 잔액 다시 로드
+    };
+
+    return (
+        <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: styles.bgColor, minHeight: '100vh' }}>
+            <Header 
+                onResolveClick={() => setIsResolveModalOpen(true)} 
+                onWalletClick={() => setIsWalletModalOpen(true)}
+                balance={balance}  // ✅ 잔액 전달
+                onRefreshBalance={loadBalance}  // ✅ 갱신 함수 전달
+            />
+            <main>
+                <BettingListSection />
+            </main>
+            <Footer />
+            
+            {isResolveModalOpen && (
+                <ResolveBetPage onClose={() => setIsResolveModalOpen(false)} />
+            )}
+            
+            {isWalletModalOpen && (
+                <WalletPage onClose={handleWalletClose} />  // ✅ 닫을 때 잔액 갱신
+            )}
+        </div>
+    );
+};
+
+export default MainPage;
