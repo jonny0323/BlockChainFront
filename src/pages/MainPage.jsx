@@ -4,7 +4,7 @@ import { FiPlus, FiCheckCircle } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import ResolveBetPage from './ResolveBetPage'; 
 import WalletPage from './WalletPage';
-import { getWallet, handleLogout, isLoggedIn, getMainData } from '../services/api.js'
+import { getWallet, handleLogout, isLoggedIn, isAdmin, getMainData } from '../services/api.js'
 
 // 기본 색상 및 스타일 변수
 const styles = {
@@ -33,68 +33,98 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     justifyContent: 'center'
 });
 
-// ✅ Header에 balance props 추가
-const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) => ( 
-    <header style={{
-        backgroundColor: styles.cardBgColor,
-        color: '#333',
-        padding: '0 5%',
-        height: styles.headerHeight,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid #eee',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-    }}>
-        <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', fontSize: '24px' }}>
-            <span style={{ color: styles.bitcoin, marginRight: '10px' }}>₿</span>
-            Betting DApp
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <Link to="/Create" style={{ textDecoration: 'none' }}>
-                <button style={{ ...buttonStyle(styles.primaryColor, 'white', '8px 15px') }}>
-                    <FiPlus style={{ marginRight: '5px' }} /> Create
-                </button>
-            </Link>
-            
-            <button 
-                style={{ ...buttonStyle(styles.secondaryColor, 'white', '8px 15px') }}
-                onClick={onResolveClick}
-            >
-                <FiCheckCircle style={{ marginRight: '5px' }} /> 확정시키기
-            </button>
-            
-            {/* ✅ 실제 잔액 표시 */}
-            <button 
-                style={{
-                    padding: '8px 15px',
-                    borderRadius: '8px',
-                    border: `1px solid ${styles.primaryColor}`,
-                    backgroundColor: 'transparent',
-                    color: styles.primaryColor,
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                }}
-                onClick={() => {
-                    onWalletClick();
-                    onRefreshBalance();  // ✅ 지갑 열 때 잔액 갱신
-                }}
-            >내 지갑 : 
-                {balance !== null ? `${balance.toFixed(2)} MATIC` : '로딩 중...'}
-            </button>
+// ✅ Header에 관리자 체크 추가
+const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) => {
+    const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
 
-            <button 
-                style={{ ...buttonStyle('#ccc', 'black', '8px 15px') }}
-                onClick={handleLogout}
-            >
-                Logout
-            </button>
-        </div>
-    </header>
-);
+    useEffect(() => {
+        // 로그인 및 관리자 여부 체크
+        setUserIsLoggedIn(isLoggedIn());
+        setUserIsAdmin(isAdmin());
+    }, []);
 
-// Betting Card Component (동일)
+    return (
+        <header style={{
+            backgroundColor: styles.cardBgColor,
+            color: '#333',
+            padding: '0 5%',
+            height: styles.headerHeight,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: '1px solid #eee',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', fontSize: '24px' }}>
+                <span style={{ color: styles.bitcoin, marginRight: '10px' }}>₿</span>
+                Betting DApp
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                {/* ✅ 관리자만 Create 버튼 보이기 */}
+                {userIsAdmin && (
+                    <Link to="/create" style={{ textDecoration: 'none' }}>
+                        <button style={{ ...buttonStyle(styles.primaryColor, 'white', '8px 15px') }}>
+                            <FiPlus style={{ marginRight: '5px' }} /> Create
+                        </button>
+                    </Link>
+                )}
+                
+                {/* ✅ 관리자만 확정하기 버튼 보이기 */}
+                {userIsAdmin && (
+                    <button 
+                        style={{ ...buttonStyle(styles.secondaryColor, 'white', '8px 15px') }}
+                        onClick={onResolveClick}
+                    >
+                        <FiCheckCircle style={{ marginRight: '5px' }} /> 확정시키기
+                    </button>
+                )}
+                
+                {/* ✅ 로그인한 사용자만 지갑 버튼 보이기 */}
+                {userIsLoggedIn && (
+                    <button 
+                        style={{
+                            padding: '8px 15px',
+                            borderRadius: '8px',
+                            border: `1px solid ${styles.primaryColor}`,
+                            backgroundColor: 'transparent',
+                            color: styles.primaryColor,
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                        onClick={() => {
+                            onWalletClick();
+                            onRefreshBalance();
+                        }}
+                    >
+                        내 지갑: {balance !== null ? `${balance.toFixed(2)} MATIC` : '로딩 중...'}
+                    </button>
+                )}
+
+                {/* ✅ 로그인 여부에 따라 Logout/Login 버튼 */}
+                {userIsLoggedIn ? (
+                    <button 
+                        style={{ ...buttonStyle('#ccc', 'black', '8px 15px') }}
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                ) : (
+                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                        <button 
+                            style={{ ...buttonStyle(styles.primaryColor, 'white', '8px 15px') }}
+                        >
+                            Login
+                        </button>
+                    </Link>
+                )}
+            </div>
+        </header>
+    );
+};
+
+// Betting Card Component
 const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, totalBet, status }) => (
     <div style={{
         backgroundColor: styles.cardBgColor,
@@ -146,7 +176,7 @@ const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, 
     </div>
 );
 
-// Betting List Section (동일)
+// Betting List Section
 const BettingListSection = () => {
     const [bets, setBets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -214,7 +244,7 @@ const BettingListSection = () => {
 };
 
 
-// Footer (동일)
+// Footer
 const Footer = () => (
     <footer style={{ backgroundColor: styles.cardBgColor, color: '#666', padding: '50px 5%', fontSize: '14px', borderTop: '1px solid #eee' }}>
         <div style={{
@@ -262,7 +292,7 @@ const Footer = () => (
 const MainPage = () => {
     const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
     const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-    const [balance, setBalance] = useState(null);  // ✅ 잔액 상태
+    const [balance, setBalance] = useState(null);
 
     // ✅ 잔액 로드
     useEffect(() => {
@@ -284,7 +314,7 @@ const MainPage = () => {
     // ✅ 지갑 모달 닫을 때 잔액 갱신
     const handleWalletClose = () => {
         setIsWalletModalOpen(false);
-        loadBalance();  // 잔액 다시 로드
+        loadBalance();
     };
 
     return (
@@ -292,8 +322,8 @@ const MainPage = () => {
             <Header 
                 onResolveClick={() => setIsResolveModalOpen(true)} 
                 onWalletClick={() => setIsWalletModalOpen(true)}
-                balance={balance}  // ✅ 잔액 전달
-                onRefreshBalance={loadBalance}  // ✅ 갱신 함수 전달
+                balance={balance}
+                onRefreshBalance={loadBalance}
             />
             <main>
                 <BettingListSection />
@@ -305,7 +335,7 @@ const MainPage = () => {
             )}
             
             {isWalletModalOpen && (
-                <WalletPage onClose={handleWalletClose} />  // ✅ 닫을 때 잔액 갱신
+                <WalletPage onClose={handleWalletClose} />
             )}
         </div>
     );

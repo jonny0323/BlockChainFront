@@ -1,47 +1,75 @@
 // src/App.jsx
 
-// import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import MainPage from './pages/MainPage.jsx'; // 아직 생성 안 함
+import MainPage from './pages/MainPage.jsx';
 import DetailBetPage from './pages/DetailBetPage.jsx';
 import WalletPage from './pages/WalletPage.jsx';
 import CreateBetPage from './pages/CreateBetPage.jsx';
 import ResolveBetPage from './pages/ResolveBetPage.jsx';
 import CallbackPage from './pages/CallbackPage';
-
-
-// import CreateBetPage from './pages/CreateBetPage'; // 아직 생성 안 함
-
-// 임시 인증 함수 (실제로는 JWT 등 확인)
-// const isAuthenticated = () => {
-//     return localStorage.getItem('authToken') !== null;
-// };
-
-// // 인증된 사용자만 접근 가능한 라우트 보호
-// const ProtectedRoute = ({ element: Element, ...rest }) => {
-//     return isAuthenticated() ? <Element {...rest} /> : <Navigate to="/login" replace />;
-// };
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 
 function App() {
     return (
         <Router>
             <Routes>
-                {/* 1. 로그인 화면 */}
+                {/* ============================================
+                    공개 페이지 (인증 불필요)
+                ============================================ */}
+                
+                {/* 로그인 */}
                 <Route path="/login" element={<LoginPage />} />
+                
+                {/* Google 로그인 콜백 */}
                 <Route path="/callback" element={<CallbackPage />} />
-
-                {/* 2. 메인 화면 (인증 필요) */}
-                {/* <Route path="/" element={<ProtectedRoute element={MainPage} />} /> */}
-                 <Route path="/" element={<MainPage />} />
-                <Route path="/Wallet" element={<WalletPage/>} />
-                <Route path="/Create" element={<CreateBetPage/>} />
-                <Route path="/Resolve" element={<ResolveBetPage/>} />
+                
+                {/* 메인 페이지 (로그인 없이도 조회 가능) */}
+                <Route path="/" element={<MainPage />} />
+                
+                {/* 베팅 상세 (로그인 없이도 조회 가능, 로그인 시 베팅 가능) */}
                 <Route path="/detail/:marketId" element={<DetailBetPage />} />
                 
-                {/* 다른 경로시 메인으로 */}
-                <Route path="*" element={<Navigate to="/" />}/>
-
+                {/* ============================================
+                    보호된 페이지 (로그인 필요)
+                ============================================ */}
+                
+                {/* 지갑 */}
+                <Route 
+                    path="/wallet" 
+                    element={
+                        <ProtectedRoute>
+                            <WalletPage />
+                        </ProtectedRoute>
+                    } 
+                />
+                
+                {/* ============================================
+                    관리자 전용 페이지
+                ============================================ */}
+                
+                {/* 베팅 생성 (관리자만) */}
+                <Route 
+                    path="/create" 
+                    element={
+                        <AdminRoute>
+                            <CreateBetPage />
+                        </AdminRoute>
+                    } 
+                />
+                
+                {/* 베팅 확정 (관리자만) */}
+                <Route 
+                    path="/resolve" 
+                    element={
+                        <AdminRoute>
+                            <ResolveBetPage />
+                        </AdminRoute>
+                    } 
+                />
+                
+                {/* 다른 경로는 메인으로 리다이렉트 */}
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Router>
     );

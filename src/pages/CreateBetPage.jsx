@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiArrowLeft, FiPlus, FiArrowUp, FiArrowDown } from 'react-icons/fi';
+import { FiArrowLeft, FiPlus, FiArrowUp, FiArrowDown, FiCheckCircle, FiCopy, FiExternalLink, FiX } from 'react-icons/fi';
 import { FaBitcoin } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { createBetting } from '../services/api';
@@ -14,7 +14,8 @@ const styles = {
     padding: '40px 5%',
     maxWidth: '1200px',
     headerHeight: '80px',
-    statusGrey: '#757575', 
+    statusGrey: '#757575',
+    infoColor: '#42a5f5',
 };
 
 const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
@@ -30,6 +31,156 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     alignItems: 'center',
     justifyContent: 'center',
 });
+
+// ✅ 베팅 생성 성공 모달 추가
+const CreateBetSuccessModal = ({ onClose, marketAddress, transactionHash }) => {
+    const handleCopyAddress = () => {
+        navigator.clipboard.writeText(marketAddress);
+        alert('마켓 주소가 복사되었습니다.');
+    };
+
+    const handleCopyHash = () => {
+        navigator.clipboard.writeText(transactionHash);
+        alert('트랜잭션 해시가 복사되었습니다.');
+    };
+
+    const polygonscanUrl = `https://polygonscan.com/tx/${transactionHash}`;
+
+    return (
+        <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+        }}>
+            <div style={{
+                backgroundColor: styles.cardBgColor,
+                borderRadius: '15px',
+                width: '90%',
+                maxWidth: '450px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+                overflow: 'hidden',
+            }}>
+                {/* Modal Header */}
+                <div style={{ padding: '20px 25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>
+                        베팅 생성 완료
+                    </h2>
+                    <FiX style={{ fontSize: '20px', cursor: 'pointer', color: styles.statusGrey }} onClick={onClose} />
+                </div>
+
+                {/* Modal Content */}
+                <div style={{ padding: '25px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '50%',
+                            backgroundColor: '#e8f5e9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 20px'
+                        }}>
+                            <FiCheckCircle style={{ fontSize: '40px', color: styles.secondaryColor }} />
+                        </div>
+                        <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '10px' }}>
+                            베팅 생성되었습니다!
+                        </h3>
+                        <p style={{ fontSize: '16px', color: styles.statusGrey }}>
+                            베팅이 성공적으로 생성되었습니다
+                        </p>
+                    </div>
+
+                    {/* 마켓 주소 */}
+                    <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>마켓 주소</h4>
+                    <div 
+                        style={{ 
+                            border: '1px solid #ddd', 
+                            padding: '15px', 
+                            borderRadius: '8px',
+                            backgroundColor: '#f9f9f9',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '20px'
+                        }}
+                    >
+                        <span style={{ 
+                            fontSize: '14px', 
+                            overflowWrap: 'break-word', 
+                            wordBreak: 'break-all',
+                            flex: 1
+                        }}>
+                            {marketAddress}
+                        </span>
+                        <FiCopy 
+                            style={{ cursor: 'pointer', color: styles.primaryColor, marginLeft: '10px' }} 
+                            onClick={handleCopyAddress} 
+                        />
+                    </div>
+
+                    {/* 트랜잭션 해시 */}
+                    <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>트랜잭션 해시</h4>
+                    <div 
+                        style={{ 
+                            border: '1px solid #ddd', 
+                            padding: '15px', 
+                            borderRadius: '8px',
+                            backgroundColor: '#f9f9f9',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '20px'
+                        }}
+                    >
+                        <span style={{ 
+                            fontSize: '14px', 
+                            overflowWrap: 'break-word', 
+                            wordBreak: 'break-all',
+                            flex: 1
+                        }}>
+                            {transactionHash}
+                        </span>
+                        <FiCopy 
+                            style={{ cursor: 'pointer', color: styles.primaryColor, marginLeft: '10px' }} 
+                            onClick={handleCopyHash} 
+                        />
+                    </div>
+
+                    {/* PolygonScan 링크 */}
+                    <a 
+                        href={polygonscanUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}
+                    >
+                        <button 
+                            style={{
+                                ...buttonStyle(styles.infoColor, 'white', '12px 25px'),
+                                width: '100%',
+                                marginBottom: '15px'
+                            }}
+                        >
+                            <FiExternalLink style={{ marginRight: '8px' }} />
+                            PolygonScan에서 확인하기
+                        </button>
+                    </a>
+
+                    <button 
+                        style={{ ...buttonStyle(styles.primaryColor, 'white', '12px 25px'), width: '100%' }} 
+                        onClick={onClose}
+                    >
+                        확인
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const Header = () => {
     const navigate = useNavigate();
@@ -58,7 +209,7 @@ const Header = () => {
     );
 };
 
-const CreateBetForm = () => {
+const CreateBetForm = ({ onSuccess }) => {
     const navigate = useNavigate();
     
     const [selectedAsset, setSelectedAsset] = useState('bitcoin');
@@ -145,9 +296,11 @@ const CreateBetForm = () => {
 
             console.log("✅ 베팅 생성 성공:", result);
 
-            alert(`베팅이 생성되었습니다!\n마켓 주소: ${result.marketAddress}`);
-            
-            navigate('/');
+            // ✅ 모달로 성공 메시지 표시
+            onSuccess({
+                marketAddress: result.marketAddress,
+                transactionHash: result.transactionHash
+            });
 
         } catch (error) {
             console.error('베팅 생성 실패:', error);
@@ -278,14 +431,35 @@ const CreateBetForm = () => {
 };
 
 const CreateBetPage = () => {
+    const navigate = useNavigate();
+    const [createResult, setCreateResult] = useState(null);
+
+    const handleCreateSuccess = (result) => {
+        setCreateResult(result);
+    };
+
+    const handleCloseModal = () => {
+        setCreateResult(null);
+        navigate('/'); // 메인 페이지로 이동
+    };
+
     return (
         <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: styles.bgColor, minHeight: '100vh' }}>
             <Header />
             <main style={{ padding: '50px 5%' }}>
                 <div style={{ maxWidth: '650px', margin: '0 auto' }}>
-                    <CreateBetForm />
+                    <CreateBetForm onSuccess={handleCreateSuccess} />
                 </div>
             </main>
+
+            {/* ✅ 베팅 생성 성공 모달 */}
+            {createResult && (
+                <CreateBetSuccessModal
+                    onClose={handleCloseModal}
+                    marketAddress={createResult.marketAddress}
+                    transactionHash={createResult.transactionHash}
+                />
+            )}
         </div>
     );
 };

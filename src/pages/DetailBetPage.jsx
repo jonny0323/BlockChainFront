@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiCheckCircle, FiCopy, FiExternalLink, FiX } from 'react-icons/fi';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDetailData, getWallet, isLoggedIn, placeBet } from '../services/api';
 
@@ -31,6 +31,154 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     alignItems: 'center',
     justifyContent: 'center',
 });
+
+// ✅ 베팅 성공 모달 추가
+const BettingSuccessModal = ({ onClose, transactionHash, amount, direction, odds }) => {
+    const handleCopyHash = () => {
+        navigator.clipboard.writeText(transactionHash);
+        alert('트랜잭션 해시가 복사되었습니다.');
+    };
+
+    const polygonscanUrl = `https://polygonscan.com/tx/${transactionHash}`;
+
+    return (
+        <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+        }}>
+            <div style={{
+                backgroundColor: styles.cardBgColor,
+                borderRadius: '15px',
+                width: '90%',
+                maxWidth: '450px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+                overflow: 'hidden',
+            }}>
+                {/* Modal Header */}
+                <div style={{ padding: '20px 25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
+                        베팅 완료
+                    </h2>
+                    <FiX style={{ fontSize: '20px', cursor: 'pointer', color: styles.statusGrey }} onClick={onClose} />
+                </div>
+
+                {/* Modal Content */}
+                <div style={{ padding: '25px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '50%',
+                            backgroundColor: '#e8f5e9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 20px'
+                        }}>
+                            <FiCheckCircle style={{ fontSize: '40px', color: styles.secondaryColor }} />
+                        </div>
+                        <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: styles.headerColor, marginBottom: '10px' }}>
+                            베팅 성공!
+                        </h3>
+                        <p style={{ fontSize: '16px', color: styles.statusGrey }}>
+                            베팅이 성공적으로 처리되었습니다
+                        </p>
+                    </div>
+
+                    {/* 베팅 정보 */}
+                    <div style={{
+                        backgroundColor: '#f9f9f9',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        marginBottom: '20px'
+                    }}>
+                        <div style={{ marginBottom: '15px' }}>
+                            <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>베팅 금액</p>
+                            <p style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
+                                {amount} MATIC
+                            </p>
+                        </div>
+                        <div style={{ marginBottom: '15px' }}>
+                            <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>선택</p>
+                            <p style={{ 
+                                fontSize: '18px', 
+                                fontWeight: 'bold',
+                                color: direction === 'YES' ? styles.secondaryColor : styles.dangerColor
+                            }}>
+                                {direction}
+                            </p>
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>배당률</p>
+                            <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.headerColor }}>
+                                {odds}x
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 트랜잭션 해시 */}
+                    <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>트랜잭션 해시</h4>
+                    <div 
+                        style={{ 
+                            border: '1px solid #ddd', 
+                            padding: '15px', 
+                            borderRadius: '8px',
+                            backgroundColor: '#f9f9f9',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '20px'
+                        }}
+                    >
+                        <span style={{ 
+                            fontSize: '14px', 
+                            overflowWrap: 'break-word', 
+                            wordBreak: 'break-all',
+                            flex: 1
+                        }}>
+                            {transactionHash}
+                        </span>
+                        <FiCopy 
+                            style={{ cursor: 'pointer', color: styles.primaryColor, marginLeft: '10px' }} 
+                            onClick={handleCopyHash} 
+                        />
+                    </div>
+
+                    {/* PolygonScan 링크 */}
+                    <a 
+                        href={polygonscanUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}
+                    >
+                        <button 
+                            style={{
+                                ...buttonStyle(styles.infoColor, 'white', '12px 25px'),
+                                width: '100%',
+                                marginBottom: '15px'
+                            }}
+                        >
+                            <FiExternalLink style={{ marginRight: '8px' }} />
+                            PolygonScan에서 확인하기
+                        </button>
+                    </a>
+
+                    <button 
+                        style={{ ...buttonStyle(styles.primaryColor, 'white', '12px 25px'), width: '100%' }} 
+                        onClick={onClose}
+                    >
+                        확인
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // 1. Header Component
 const Header = ({ balance }) => {
@@ -99,12 +247,17 @@ const BettingDetail = ({ market, betting }) => {
         minWidth: '130px'
     });
 
+    const handleCopyAddress = () => {
+        navigator.clipboard.writeText(market.contractAddress);
+        alert('컨트랙트 주소가 복사되었습니다.');
+    };
+
     return (
         <section style={{ ...commonCardStyle, textAlign: 'left' }}>
             <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '15px', color: '#333' }}>
                 {market.title}
             </h2>
-            <div style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '20px' }}>
+            <div style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '10px' }}>
                 <span style={{ marginRight: '20px' }}>
                     ⊙ 마감: {new Date(market.settlementTime).toLocaleString('ko-KR')}
                 </span>
@@ -112,6 +265,78 @@ const BettingDetail = ({ market, betting }) => {
                     ⊙ 생성자: 스마트 컨트랙트
                 </span>
                 <span>⊙ 현재가: ${parseFloat(market.currentPrice).toLocaleString()}</span>
+            </div>
+
+            {/* ✅ 스마트 컨트랙트 주소 추가 */}
+            <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '10px',
+                marginBottom: '20px',
+                padding: '12px',
+                backgroundColor: '#f9f9f9',
+                borderRadius: '8px',
+                border: '1px solid #e0e0e0'
+            }}>
+                <span style={{ fontSize: '14px', color: styles.statusGrey, fontWeight: 'bold' }}>
+                    📄 컨트랙트:
+                </span>
+                <span style={{ 
+                    fontSize: '13px', 
+                    color: '#333',
+                    fontFamily: 'monospace',
+                    flex: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                }}>
+                    {market.contractAddress}
+                </span>
+                <button
+                    onClick={handleCopyAddress}
+                    style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        backgroundColor: '#e3f2fd',
+                        color: styles.primaryColor,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                    }}
+                >
+                    <FiCopy size={12} />
+                    복사
+                </button>
+                <a
+                    href={`https://polygonscan.com/address/${market.contractAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}
+                >
+                    <button
+                        style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            backgroundColor: styles.primaryColor,
+                            color: 'white',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <FiExternalLink size={12} />
+                        PolygonScan에서 보기
+                    </button>
+                </a>
             </div>
 
             <p style={{ fontSize: '16px', color: '#666', marginBottom: '30px' }}>
@@ -190,7 +415,21 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
 
     const handleQuickBet = (amount) => {
         if (amount === '전액') {
-            setBetAmount(availableWeth.toFixed(2));
+            // ✅ 가스비를 고려한 최대 베팅 가능 금액
+            const estimatedGasFee = 0.5; // MATIC
+            const maxBetAmount = Math.max(0, availableWeth - estimatedGasFee);
+            
+            if (maxBetAmount <= 0) {
+                alert(
+                    `베팅 가능한 금액이 없습니다.\n\n` +
+                    `현재 잔액: ${availableWeth.toFixed(4)} MATIC\n` +
+                    `예상 가스비: ${estimatedGasFee} MATIC\n\n` +
+                    `💡 최소 ${estimatedGasFee} MATIC이 필요합니다.`
+                );
+                return;
+            }
+            
+            setBetAmount(maxBetAmount.toFixed(4));
         } else {
             setBetAmount(amount.toString());
         }
@@ -209,8 +448,21 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 return;
             }
 
-            if (parseFloat(betAmount) > availableWeth) {
-                alert('잔액이 부족합니다.');
+            // ✅ 가스비를 고려한 잔액 확인
+            const estimatedGasFee = 0.5; // MATIC (여유있게 설정)
+            const totalNeeded = parseFloat(betAmount) + estimatedGasFee;
+            
+            if (totalNeeded > availableWeth) {
+                const shortage = (totalNeeded - availableWeth).toFixed(4);
+                alert(
+                    `잔액이 부족합니다.\n\n` +
+                    `필요 금액: ${totalNeeded.toFixed(4)} MATIC\n` +
+                    `- 베팅액: ${parseFloat(betAmount).toFixed(4)} MATIC\n` +
+                    `- 예상 가스비: ${estimatedGasFee} MATIC\n\n` +
+                    `현재 잔액: ${availableWeth.toFixed(4)} MATIC\n` +
+                    `부족 금액: ${shortage} MATIC\n\n` +
+                    `💡 지갑에 MATIC을 충전해주세요.`
+                );
                 return;
             }
 
@@ -228,11 +480,15 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
 
             console.log("✅ 베팅 성공:", result);
 
-            alert(`베팅이 성공적으로 완료되었습니다!\n\n트랜잭션: ${result.transactionHash}\n\nPolygonScan에서 확인하세요:\n${result.polygonscan}`);
+            // ✅ 모달로 성공 메시지 표시
+            onBetSuccess({
+                transactionHash: result.transactionHash,
+                amount: betAmount,
+                direction: selectedOption,
+                odds: isAbove ? yesOdds : noOdds
+            });
 
-            // ✅ 베팅 성공 후 데이터 새로고침
             setBetAmount('');
-            onBetSuccess();
 
         } catch (error) {
             console.error('베팅 실패:', error);
@@ -290,36 +546,47 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 </span>
             </div>
             <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '20px' }}>
-                사용 가능: {availableWeth.toFixed(2)} MATIC
+                사용 가능: {availableWeth.toFixed(4)} MATIC
+                <br/>
+                <span style={{ fontSize: '12px', color: '#ff9800' }}>
+                    💡 가스비 약 0.5 MATIC 별도 필요
+                </span>
             </p>
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'space-between' }}>
-                {quickBetAmounts.map((amount, index) => (
-                    <button 
-                        key={index}
-                        onClick={() => handleQuickBet(amount)}
-                        disabled={loading}
-                        style={{
-                            ...buttonStyle('#eee', styles.statusGrey, '8px 15px'),
-                            flex: 1, 
-                            minWidth: '0',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.5 : 1
-                        }}
-                    >
-                        {amount} MATIC
-                    </button>
-                ))}
+                {quickBetAmounts.map((amount, index) => {
+                    const estimatedGasFee = 0.5;
+                    const isDisabled = loading || (amount + estimatedGasFee > availableWeth);
+                    
+                    return (
+                        <button 
+                            key={index}
+                            onClick={() => handleQuickBet(amount)}
+                            disabled={isDisabled}
+                            style={{
+                                ...buttonStyle('#eee', styles.statusGrey, '8px 15px'),
+                                flex: 1, 
+                                minWidth: '0',
+                                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                opacity: isDisabled ? 0.4 : 1,
+                                backgroundColor: isDisabled ? '#f5f5f5' : '#eee'
+                            }}
+                        >
+                            {amount} MATIC
+                        </button>
+                    );
+                })}
                 <button 
                     onClick={() => handleQuickBet('전액')}
-                    disabled={loading}
+                    disabled={loading || availableWeth <= 0.5}
                     style={{
                         ...buttonStyle('#eee', styles.primaryColor, '8px 15px'),
                         flex: 1, 
                         minWidth: '0',
                         fontWeight: 'bold',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        opacity: loading ? 0.5 : 1
+                        cursor: (loading || availableWeth <= 0.5) ? 'not-allowed' : 'pointer',
+                        opacity: (loading || availableWeth <= 0.5) ? 0.4 : 1,
+                        backgroundColor: (loading || availableWeth <= 0.5) ? '#f5f5f5' : '#eee'
                     }}
                 >
                     전액
@@ -443,6 +710,7 @@ const DetailBetPage = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const [balance, setBalance] = useState(null);
+    const [betResult, setBetResult] = useState(null); // ✅ 베팅 결과 저장
 
     useEffect(() => {
         loadData();
@@ -472,8 +740,14 @@ const DetailBetPage = () => {
     };
 
     // ✅ 베팅 성공 후 호출
-    const handleBetSuccess = () => {
+    const handleBetSuccess = (result) => {
+        setBetResult(result);
         loadData(); // 데이터 새로고침
+    };
+
+    // ✅ 모달 닫기
+    const handleCloseModal = () => {
+        setBetResult(null);
     };
 
     if (loading) {
@@ -526,6 +800,17 @@ const DetailBetPage = () => {
                     </div>
                 </div>
             </main>
+
+            {/* ✅ 베팅 성공 모달 */}
+            {betResult && (
+                <BettingSuccessModal
+                    onClose={handleCloseModal}
+                    transactionHash={betResult.transactionHash}
+                    amount={betResult.amount}
+                    direction={betResult.direction}
+                    odds={betResult.odds}
+                />
+            )}
         </div>
     );
 };
