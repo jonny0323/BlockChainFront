@@ -42,7 +42,7 @@ const checkAdminStatus = () => {
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const payload = JSON.parse(window.atob(base64));
         
-        return payload.isAdmin || false;
+        return payload.admin || false;
     } catch (error) {
         console.error('토큰 디코딩 실패:', error);
         return false;
