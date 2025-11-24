@@ -16,6 +16,7 @@ const styles = {
     headerHeight: '80px',
     statusBlue: '#2196f3',
     statusGrey: '#757575',
+    infoColor: '#42a5f5',
 };
 
 const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
@@ -415,7 +416,6 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
 
     const handleQuickBet = (amount) => {
         if (amount === '전액') {
-            // ✅ 가스비를 고려한 최대 베팅 가능 금액
             const estimatedGasFee = 0.03; // MATIC
             const maxBetAmount = Math.max(0, availableWeth - estimatedGasFee);
             
@@ -448,8 +448,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 return;
             }
 
-            // ✅ 가스비를 고려한 잔액 확인
-            const estimatedGasFee = 0.1; // MATIC (여유있게 설정)
+            const estimatedGasFee = 0.1; 
             const totalNeeded = parseFloat(betAmount) + estimatedGasFee;
             
             if (totalNeeded > availableWeth) {
@@ -480,7 +479,6 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
 
             console.log("✅ 베팅 성공:", result);
 
-            // ✅ 모달로 성공 메시지 표시
             onBetSuccess({
                 transactionHash: result.transactionHash,
                 amount: betAmount,
@@ -710,7 +708,7 @@ const DetailBetPage = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const [balance, setBalance] = useState(null);
-    const [betResult, setBetResult] = useState(null); // ✅ 베팅 결과 저장
+    const [betResult, setBetResult] = useState(null); //  베팅 결과 저장
 
     useEffect(() => {
         loadData();
@@ -739,13 +737,13 @@ const DetailBetPage = () => {
         }
     };
 
-    // ✅ 베팅 성공 후 호출
+    //  베팅 성공 후 호출
     const handleBetSuccess = (result) => {
         setBetResult(result);
         loadData(); // 데이터 새로고침
     };
 
-    // ✅ 모달 닫기
+    //  모달 닫기
     const handleCloseModal = () => {
         setBetResult(null);
     };
@@ -801,7 +799,7 @@ const DetailBetPage = () => {
                 </div>
             </main>
 
-            {/* ✅ 베팅 성공 모달 */}
+            {/*  베팅 성공 모달 */}
             {betResult && (
                 <BettingSuccessModal
                     onClose={handleCloseModal}
