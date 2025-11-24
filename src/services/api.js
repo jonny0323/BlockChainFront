@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://blockchainbetting.duckdns.org';
 
 // ✅ API 호출 헬퍼 함수 (에러 핸들링 포함)
 const apiCall = async (url, options = {}) => {
