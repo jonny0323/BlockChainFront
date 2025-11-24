@@ -222,7 +222,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     style={{
-                        width: '76%',
+                        width: '74%',
                         padding: '15px',
                         paddingRight: '80px',
                         border: '1px solid #ddd',
