@@ -416,7 +416,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
     const handleQuickBet = (amount) => {
         if (amount === '전액') {
             // ✅ 가스비를 고려한 최대 베팅 가능 금액
-            const estimatedGasFee = 0.5; // MATIC
+            const estimatedGasFee = 0.03; // MATIC
             const maxBetAmount = Math.max(0, availableWeth - estimatedGasFee);
             
             if (maxBetAmount <= 0) {
@@ -449,7 +449,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
             }
 
             // ✅ 가스비를 고려한 잔액 확인
-            const estimatedGasFee = 0.5; // MATIC (여유있게 설정)
+            const estimatedGasFee = 0.1; // MATIC (여유있게 설정)
             const totalNeeded = parseFloat(betAmount) + estimatedGasFee;
             
             if (totalNeeded > availableWeth) {
@@ -549,13 +549,13 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 사용 가능: {availableWeth.toFixed(4)} MATIC
                 <br/>
                 <span style={{ fontSize: '12px', color: '#ff9800' }}>
-                    💡 가스비 약 0.5 MATIC 별도 필요
+                    💡 가스비 약 0.03 MATIC 별도 필요
                 </span>
             </p>
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'space-between' }}>
                 {quickBetAmounts.map((amount, index) => {
-                    const estimatedGasFee = 0.5;
+                    const estimatedGasFee = 0.03;
                     const isDisabled = loading || (amount + estimatedGasFee > availableWeth);
                     
                     return (
@@ -578,15 +578,15 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 })}
                 <button 
                     onClick={() => handleQuickBet('전액')}
-                    disabled={loading || availableWeth <= 0.5}
+                    disabled={loading || availableWeth <= 0.03}
                     style={{
                         ...buttonStyle('#eee', styles.primaryColor, '8px 15px'),
                         flex: 1, 
                         minWidth: '0',
                         fontWeight: 'bold',
-                        cursor: (loading || availableWeth <= 0.5) ? 'not-allowed' : 'pointer',
-                        opacity: (loading || availableWeth <= 0.5) ? 0.4 : 1,
-                        backgroundColor: (loading || availableWeth <= 0.5) ? '#f5f5f5' : '#eee'
+                        cursor: (loading || availableWeth <= 0.03) ? 'not-allowed' : 'pointer',
+                        opacity: (loading || availableWeth <= 0.03) ? 0.4 : 1,
+                        backgroundColor: (loading || availableWeth <= 0.03) ? '#f5f5f5' : '#eee'
                     }}
                 >
                     전액
