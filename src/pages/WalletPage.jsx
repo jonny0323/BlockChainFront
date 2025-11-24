@@ -86,7 +86,7 @@ const WalletMainView = ({ currentBalance, onActionClick }) => {
                 <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>
                     {currentBalance.toLocaleString()} POL
                 </h3>
-                <p style={{ fontSize: '14px', opacity: 0.8 }}>Wrapped Ethereum</p>
+                <p style={{ fontSize: '14px', opacity: 0.8 }}>POLYGON MAINET</p>
             </div>
             
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
@@ -222,7 +222,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     style={{
-                        width: '85%',
+                        width: '70%',
                         padding: '15px',
                         paddingRight: '80px',
                         border: '1px solid #ddd',

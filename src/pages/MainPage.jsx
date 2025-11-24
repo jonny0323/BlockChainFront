@@ -98,7 +98,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
                             onRefreshBalance();
                         }}
                     >
-                        내 지갑: {balance !== null ? `${balance.toFixed(2)} MATIC` : '로딩 중...'}
+                        내 지갑: {balance !== null ? `${balance.toFixed(2)} POL` : '로딩 중...'}
                     </button>
                 )}
 
@@ -158,7 +158,7 @@ const BettingCard = ({ idx, title, smartDeadline, smartBetting, participants, to
             </div>
             <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '14px', color: '#666' }}>총 베팅액</p>
-                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.dangerColor }}>{totalBet} MATIC</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.dangerColor }}>{totalBet} POL</p>
             </div>
         </div>
         
