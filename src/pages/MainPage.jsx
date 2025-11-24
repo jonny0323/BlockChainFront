@@ -125,7 +125,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
 };
 
 // Betting Card Component
-const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, totalBet, status }) => (
+const BettingCard = ({ idx, title, smartDeadline, smartBetting, participants, totalBet, status }) => (
     <div style={{
         backgroundColor: styles.cardBgColor,
         padding: '20px',
@@ -135,31 +135,33 @@ const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, 
         width: '30%',
         minWidth: '350px',
     }}>
+        {/* ✅ 제목 한 줄로 표시 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
-                {date.year}년 {date.month}월 {date.day}일 {asset} {condition}
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#333', flex: 1 }}>
+                {title}
             </h3>
-            <span style={{ color: styles.primaryColor, fontWeight: 'bold' }}>{status}</span>
+            <span style={{ color: styles.primaryColor, fontWeight: 'bold', marginLeft: '10px' }}>{status}</span>
         </div>
 
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
-            스마트 마감: {date.smartDeadline}
+            스마트 마감: {smartDeadline}
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', textAlign: 'center' }}>
             <div style={{ flex: 1, borderRight: '1px solid #eee' }}>
                 <p style={{ fontSize: '14px', color: '#666' }}>찬성 베팅 수익률</p>
-                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.secondaryColor }}>{smartBetting.toLocaleString()}</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.secondaryColor }}>{smartBetting.toFixed(2)}x</p>
             </div>
             <div style={{ flex: 1, borderRight: '1px solid #eee' }}>
                 <p style={{ fontSize: '14px', color: '#666' }}>참여자 수</p>
-                <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>{participants.toLocaleString()}</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>{participants}명</p>
             </div>
             <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '14px', color: '#666' }}>총 베팅액</p>
-                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.dangerColor }}>{totalBet.toLocaleString()}</p>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: styles.dangerColor }}>{totalBet} MATIC</p>
             </div>
         </div>
+        
         <Link to={`/detail/${idx}`} style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex' }}>
                 <button 
@@ -176,7 +178,7 @@ const BettingCard = ({ idx, asset, condition, date, smartBetting, participants, 
     </div>
 );
 
-// Betting List Section
+// ✅ BettingListSection에서 props 수정
 const BettingListSection = () => {
     const [bets, setBets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -222,14 +224,8 @@ const BettingListSection = () => {
                             <BettingCard 
                                 key={bet.idx}
                                 idx={bet.idx}
-                                asset="비트코인"
-                                condition={bet.title}
-                                date={{
-                                    year: new Date(bet.settlementTime).getFullYear(),
-                                    month: new Date(bet.settlementTime).getMonth() + 1,
-                                    day: new Date(bet.settlementTime).getDate(),
-                                    smartDeadline: new Date(bet.settlementTime).toLocaleDateString('ko-KR')
-                                }}
+                                title={bet.title}  // ✅ 제목 그대로 전달
+                                smartDeadline={new Date(bet.settlementTime).toLocaleDateString('ko-KR')}
                                 smartBetting={parseFloat(bet.yesOdds)}
                                 participants={bet.participantCount}
                                 totalBet={parseFloat(bet.totalBetAmount)}
@@ -242,6 +238,7 @@ const BettingListSection = () => {
         </section>
     );
 };
+
 
 
 // Footer
