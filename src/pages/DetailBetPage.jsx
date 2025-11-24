@@ -101,7 +101,7 @@ const BettingSuccessModal = ({ onClose, transactionHash, amount, direction, odds
                         <div style={{ marginBottom: '15px' }}>
                             <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>베팅 금액</p>
                             <p style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
-                                {amount} MATIC
+                                {amount} POL
                             </p>
                         </div>
                         <div style={{ marginBottom: '15px' }}>
@@ -217,7 +217,7 @@ const Header = ({ balance }) => {
                         cursor: 'pointer',
                     }}
                 >
-                    내 지갑: {balance !== null ? `${balance.toFixed(2)} MATIC` : '로딩 중...'}
+                    내 지갑: {balance !== null ? `${balance.toFixed(2)} POL` : '로딩 중...'}
                 </button>
             </div>
         </header>
@@ -354,7 +354,7 @@ const BettingDetail = ({ market, betting }) => {
                 <div style={{ flex: 1, minWidth: '150px' }}> 
                     <p style={{ fontSize: '16px', color: styles.statusGrey }}>총 베팅액</p>
                     <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#333' }}>
-                        {parseFloat(betting.totalAmount).toLocaleString()} MATIC
+                        {parseFloat(betting.totalAmount).toLocaleString()} POL
                     </p>
                 </div>
 
@@ -362,7 +362,7 @@ const BettingDetail = ({ market, betting }) => {
                     <p style={{ fontSize: '14px', marginBottom: '5px' }}>
                         YES 베팅액 ({betting.yesParticipants}명)
                     </p>
-                    {parseFloat(betting.yesAmount).toLocaleString()} MATIC
+                    {parseFloat(betting.yesAmount).toLocaleString()} POL
                     <p style={{ fontSize: '14px', fontWeight: 'normal', marginTop: '5px' }}>
                         배당률: {betting.yesOdds}x
                     </p>
@@ -372,7 +372,7 @@ const BettingDetail = ({ market, betting }) => {
                     <p style={{ fontSize: '14px', marginBottom: '5px' }}>
                         NO 베팅액 ({betting.noParticipants}명)
                     </p>
-                    {parseFloat(betting.noAmount).toLocaleString()} MATIC
+                    {parseFloat(betting.noAmount).toLocaleString()} POL
                     <p style={{ fontSize: '14px', fontWeight: 'normal', marginTop: '5px' }}>
                         배당률: {betting.noOdds}x
                     </p>
@@ -422,9 +422,9 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
             if (maxBetAmount <= 0) {
                 alert(
                     `베팅 가능한 금액이 없습니다.\n\n` +
-                    `현재 잔액: ${availableWeth.toFixed(4)} MATIC\n` +
-                    `예상 가스비: ${estimatedGasFee} MATIC\n\n` +
-                    `💡 최소 ${estimatedGasFee} MATIC이 필요합니다.`
+                    `현재 잔액: ${availableWeth.toFixed(4)} POL\n` +
+                    `예상 가스비: ${estimatedGasFee} POL\n\n` +
+                    `💡 최소 ${estimatedGasFee} POL이 필요합니다.`
                 );
                 return;
             }
@@ -455,12 +455,12 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 const shortage = (totalNeeded - availableWeth).toFixed(4);
                 alert(
                     `잔액이 부족합니다.\n\n` +
-                    `필요 금액: ${totalNeeded.toFixed(4)} MATIC\n` +
-                    `- 베팅액: ${parseFloat(betAmount).toFixed(4)} MATIC\n` +
-                    `- 예상 가스비: ${estimatedGasFee} MATIC\n\n` +
-                    `현재 잔액: ${availableWeth.toFixed(4)} MATIC\n` +
-                    `부족 금액: ${shortage} MATIC\n\n` +
-                    `💡 지갑에 MATIC을 충전해주세요.`
+                    `필요 금액: ${totalNeeded.toFixed(4)} POL\n` +
+                    `- 베팅액: ${parseFloat(betAmount).toFixed(4)} POL\n` +
+                    `- 예상 가스비: ${estimatedGasFee} POL\n\n` +
+                    `현재 잔액: ${availableWeth.toFixed(4)} POL\n` +
+                    `부족 금액: ${shortage} POL\n\n` +
+                    `💡 지갑에 POL을 충전해주세요.`
                 );
                 return;
             }
@@ -521,7 +521,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 </div>
             </div>
 
-            <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#333' }}>베팅 금액 (MATIC)</h3>
+            <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#333' }}>베팅 금액 (POL)</h3>
             <div style={{ position: 'relative', marginBottom: '15px' }}>
                 <input
                     type="number"
@@ -540,14 +540,14 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                     }}
                 />
                 <span style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', color: styles.statusGrey }}>
-                    MATIC
+                    POL
                 </span>
             </div>
             <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '20px' }}>
-                사용 가능: {availableWeth.toFixed(4)} MATIC
+                사용 가능: {availableWeth.toFixed(4)} POL
                 <br/>
                 <span style={{ fontSize: '12px', color: '#ff9800' }}>
-                    💡 가스비 약 0.03 MATIC 별도 필요
+                    💡 가스비 약 0.03 POL 별도 필요
                 </span>
             </p>
 
@@ -570,7 +570,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                                 backgroundColor: isDisabled ? '#f5f5f5' : '#eee'
                             }}
                         >
-                            {amount} MATIC
+                            {amount} POL
                         </button>
                     );
                 })}
@@ -684,14 +684,14 @@ const BettingHistory = ({ userBets }) => {
                     <div style={{ textAlign: 'right', minWidth: '150px' }}>
                         <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>베팅액</p>
                         <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', marginBottom: '10px' }}>
-                            {parseFloat(item.amount).toLocaleString()} MATIC
+                            {parseFloat(item.amount).toLocaleString()} POL
                         </p>
                         
                         {item.profit !== '0.00' && (
                             <div style={{ color: parseFloat(item.profit) >= 0 ? styles.secondaryColor : styles.dangerColor, fontWeight: 'bold' }}>
                                 <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>수익</p>
                                 <p style={{ fontSize: '16px' }}>
-                                    {parseFloat(item.profit) >= 0 ? '+' : ''}{parseFloat(item.profit).toLocaleString()} MATIC
+                                    {parseFloat(item.profit) >= 0 ? '+' : ''}{parseFloat(item.profit).toLocaleString()} POL
                                 </p>
                             </div>
                         )}

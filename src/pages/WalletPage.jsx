@@ -84,7 +84,7 @@ const WalletMainView = ({ currentBalance, onActionClick }) => {
             <div style={balanceCardStyle}>
                 <p style={{ fontSize: '14px', marginBottom: '5px' }}>현재 잔액</p>
                 <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>
-                    {currentBalance.toLocaleString()} WETH
+                    {currentBalance.toLocaleString()} POL
                 </h3>
                 <p style={{ fontSize: '14px', opacity: 0.8 }}>Wrapped Ethereum</p>
             </div>
@@ -121,7 +121,7 @@ const DepositView = ({ onBack, depositAddress }) => {
     return (
         <>
             <p style={{ marginBottom: '20px', color: styles.statusGrey }}>
-                아래 주소로 WETH를 전송하세요
+                아래 주소로 POL를 전송하세요
             </p>
             
             <h4 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>공개키 주소</h4>
@@ -157,7 +157,7 @@ const DepositView = ({ onBack, depositAddress }) => {
                 }}
             >
                 <span style={{ color: styles.dangerColor, fontWeight: 'bold', marginRight: '10px' }}>⚠️</span>
-                주의: WETH만 전송하세요. 다른 토큰을 전송하면 손실될 수 있습니다.
+                주의: POL만 전송하세요. 다른 토큰을 전송하면 손실될 수 있습니다.
             </div>
 
             <button 
@@ -210,7 +210,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
             <p style={{ fontSize: '16px', color: styles.statusGrey, marginBottom: '20px' }}>
                 사용 가능 잔액
                 <span style={{ float: 'right', fontWeight: 'bold', color: styles.headerColor }}>
-                    {currentBalance ? currentBalance.toFixed(4) : '0.0000'} MATIC
+                    {currentBalance ? currentBalance.toFixed(4) : '0.0000'} POL
                 </span>
             </p>
             
@@ -222,7 +222,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     style={{
-                        width: '100%',
+                        width: '85%',
                         padding: '15px',
                         paddingRight: '80px',
                         border: '1px solid #ddd',
@@ -231,7 +231,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
                     }}
                 />
                 <span style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', color: styles.statusGrey }}>
-                    MATIC
+                    POL
                 </span>
             </div>
             
@@ -249,7 +249,7 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
                 value={recipientAddress}
                 onChange={(e) => setRecipientAddress(e.target.value)}
                 style={{
-                    width: '100%',
+                    width: '90%',
                     padding: '15px',
                     border: '1px solid #ddd',
                     borderRadius: '8px',
@@ -339,7 +339,7 @@ const WithdrawSuccessView = ({ onClose, transactionHash, amount, targetAddress }
                 <div style={{ marginBottom: '15px' }}>
                     <p style={{ fontSize: '14px', color: styles.statusGrey, marginBottom: '5px' }}>출금 금액</p>
                     <p style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
-                        {amount} MATIC
+                        {amount} POL
                     </p>
                 </div>
                 <div>
