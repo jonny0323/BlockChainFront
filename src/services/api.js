@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_URL = process.env.VITE_API_URL
+const API_URL = 'https://blockchainbetting.duckdns.org';
 
 // ============================================
 // API 호출 헬퍼 함수
