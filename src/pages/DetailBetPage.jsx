@@ -416,7 +416,7 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
 
     const handleQuickBet = (amount) => {
         if (amount === '전액') {
-            const estimatedGasFee = 0.03; // MATIC
+            const estimatedGasFee = 0.5; // 
             const maxBetAmount = Math.max(0, availableWeth - estimatedGasFee);
             
             if (maxBetAmount <= 0) {
@@ -430,71 +430,90 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
             }
             
             setBetAmount(maxBetAmount.toFixed(4));
-        } else {
-            setBetAmount(amount.toString());
+            } else {
+                setBetAmount(amount.toString());
         }
     };
 
     const handleBet = async () => {
-        try {
-            // ✅ 검증
-            if (!isLoggedIn()) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-
-            if (!betAmount || parseFloat(betAmount) <= 0) {
-                alert('유효한 베팅 금액을 입력하세요.');
-                return;
-            }
-
-            const estimatedGasFee = 0.1; 
-            const totalNeeded = parseFloat(betAmount) + estimatedGasFee;
-            
-            if (totalNeeded > availableWeth) {
-                const shortage = (totalNeeded - availableWeth).toFixed(4);
-                alert(
-                    `잔액이 부족합니다.\n\n` +
-                    `필요 금액: ${totalNeeded.toFixed(4)} POL\n` +
-                    `- 베팅액: ${parseFloat(betAmount).toFixed(4)} POL\n` +
-                    `- 예상 가스비: ${estimatedGasFee} POL\n\n` +
-                    `현재 잔액: ${availableWeth.toFixed(4)} POL\n` +
-                    `부족 금액: ${shortage} POL\n\n` +
-                    `💡 지갑에 POL을 충전해주세요.`
-                );
-                return;
-            }
-
-            setLoading(true);
-
-            const isAbove = selectedOption === 'YES';
-            
-            console.log("📤 베팅 요청:", {
-                marketId,
-                amount: betAmount,
-                isAbove
-            });
-
-            const result = await placeBet(marketId, betAmount, isAbove);
-
-            console.log("✅ 베팅 성공:", result);
-
-            onBetSuccess({
-                transactionHash: result.transactionHash,
-                amount: betAmount,
-                direction: selectedOption,
-                odds: isAbove ? yesOdds : noOdds
-            });
-
-            setBetAmount('');
-
-        } catch (error) {
-            console.error('베팅 실패:', error);
-            alert(`베팅 실패: ${error.message}`);
-        } finally {
-            setLoading(false);
+    try {
+        // ✅ 검증
+        if (!isLoggedIn()) {
+            alert('로그인이 필요합니다.');
+            return;
         }
-    };
+
+        if (!betAmount || parseFloat(betAmount) <= 0) {
+            alert('유효한 베팅 금액을 입력하세요.');
+            return;
+        }
+
+        const estimatedGasFee = 0.1; 
+        const totalNeeded = parseFloat(betAmount) + estimatedGasFee;
+        
+        if (totalNeeded > availableWeth) {
+            const shortage = (totalNeeded - availableWeth).toFixed(4);
+            alert(
+                `잔액이 부족합니다.\n\n` +
+                `필요 금액: ${totalNeeded.toFixed(4)} POL\n` +
+                `- 베팅액: ${parseFloat(betAmount).toFixed(4)} POL\n` +
+                `- 예상 가스비: ${estimatedGasFee} POL\n\n` +
+                `현재 잔액: ${availableWeth.toFixed(4)} POL\n` +
+                `부족 금액: ${shortage} POL\n\n` +
+                `💡 지갑에 POL을 충전해주세요.`
+            );
+            return;
+        }
+
+        setLoading(true);
+
+        const isAbove = selectedOption === 'YES';
+        
+        console.log("📤 베팅 요청:", {
+            marketId,
+            amount: betAmount,
+            isAbove
+        });
+
+        const result = await placeBet(marketId, betAmount, isAbove);
+
+        console.log("✅ 베팅 성공:", result);
+
+        onBetSuccess({
+            transactionHash: result.transactionHash,
+            amount: betAmount,
+            direction: selectedOption,
+            odds: isAbove ? yesOdds : noOdds
+        });
+
+        setBetAmount('');
+
+    } catch (error) {
+        console.error('베팅 실패:', error);
+        
+        // ✅ 에러 타입에 따른 메시지 표시
+        let errorMessage = '베팅 처리 중 오류가 발생했습니다.';
+        
+        if (error.errorType === 'INSUFFICIENT_GAS') {
+            errorMessage = '⛽ 가스비가 부족하여 베팅에 실패했습니다.\n\n' +
+                          '지갑에 POL을 충전한 후 다시 시도해주세요.';
+        } else if (error.message) {
+            // 에러 메시지에서 가스비 관련 키워드 체크
+            if (error.message.includes('insufficient funds') || 
+                error.message.includes('gas') ||
+                error.message.includes('가스')) {
+                errorMessage = '⛽ 가스비가 부족하여 베팅에 실패했습니다.\n\n' +
+                              '지갑에 POL을 충전한 후 다시 시도해주세요.';
+            } else {
+                errorMessage = `베팅 실패: ${error.message}`;
+            }
+        }
+        
+        alert(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <section style={commonCardStyle}>
@@ -547,13 +566,13 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 사용 가능: {availableWeth.toFixed(4)} POL
                 <br/>
                 <span style={{ fontSize: '12px', color: '#ff9800' }}>
-                    💡 가스비 약 0.03 POL 별도 필요
+                    💡 가스비 약 0.5 POL 별도 필요
                 </span>
             </p>
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'space-between' }}>
                 {quickBetAmounts.map((amount, index) => {
-                    const estimatedGasFee = 0.03;
+                    const estimatedGasFee = 0.5;
                     const isDisabled = loading || (amount + estimatedGasFee > availableWeth);
                     
                     return (
@@ -576,15 +595,15 @@ const BettingForm = ({ betting, balance, marketId, onBetSuccess }) => {
                 })}
                 <button 
                     onClick={() => handleQuickBet('전액')}
-                    disabled={loading || availableWeth <= 0.03}
+                    disabled={loading || availableWeth <= 0.5}
                     style={{
                         ...buttonStyle('#eee', styles.primaryColor, '8px 15px'),
                         flex: 1, 
                         minWidth: '0',
                         fontWeight: 'bold',
-                        cursor: (loading || availableWeth <= 0.03) ? 'not-allowed' : 'pointer',
-                        opacity: (loading || availableWeth <= 0.03) ? 0.4 : 1,
-                        backgroundColor: (loading || availableWeth <= 0.03) ? '#f5f5f5' : '#eee'
+                        cursor: (loading || availableWeth <= 0.5) ? 'not-allowed' : 'pointer',
+                        opacity: (loading || availableWeth <= 0.5) ? 0.4 : 1,
+                        backgroundColor: (loading || availableWeth <= 0.5) ? '#f5f5f5' : '#eee'
                     }}
                 >
                     전액
