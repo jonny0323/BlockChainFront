@@ -5,14 +5,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const CallbackPage = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    console.log("!@!!@!@!")
 
     useEffect(() => {
         const token = searchParams.get('token');
         
         if (token) {
             localStorage.setItem('token', token);
-            console.log('✅ 로그인 성공!');
             navigate('/');
         } else {
             alert('로그인 실패: 토큰이 없습니다.');

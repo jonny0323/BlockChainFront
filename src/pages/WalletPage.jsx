@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';  // ✅ useEffect 추가
+import React, { useState, useEffect } from 'react';  
 
 import { FiX, FiCopy, FiCheckCircle, FiExternalLink } from 'react-icons/fi'; 
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; // 출금/입금 아이콘
-import { getWallet, getAddress, withdraw } from '../services/api';  // ✅ API 함수 import
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; 
+import { getWallet, getAddress, withdraw } from '../services/api';  
+// ============================================
+// 해당 화면 기본 세팅
+// ============================================
 
-// 스타일 변수 재정의 (이전 대화에서 사용된 스타일 유지)
 const styles = {
     primaryColor: '#5c6bc0',
     secondaryColor: '#4caf50', // 녹색 (입금 버튼)
@@ -16,7 +18,6 @@ const styles = {
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
 };
 
-// 재사용 가능한 버튼 스타일
 const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     padding: padding,
     borderRadius: '8px',
@@ -31,7 +32,6 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     justifyContent: 'center',
 });
 
-// --- Modal Container (공통) ---
 const ModalContainer = ({ title, children, onClose }) => (
     <div style={{
         position: 'fixed',
@@ -65,6 +65,9 @@ const ModalContainer = ({ title, children, onClose }) => (
     </div>
 );
 
+// ============================================
+// 메인화면
+// ============================================
 
 // 1. 내 지갑 - 메인 화면
 const WalletMainView = ({ currentBalance, onActionClick }) => {
@@ -172,7 +175,7 @@ const DepositView = ({ onBack, depositAddress }) => {
 
 
 // 3. 출금하기 화면 (수정)
-const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSuccess props 추가
+const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  //  onSuccess props 추가
     const [withdrawAmount, setWithdrawAmount] = useState('');
     const [recipientAddress, setRecipientAddress] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -192,7 +195,6 @@ const WithdrawView = ({ onBack, currentBalance, onSuccess }) => {  // ✅ onSucc
         try {
             const result = await withdraw(recipientAddress, withdrawAmount);
             
-            // ✅ 성공 화면으로 이동
             onSuccess({
                 transactionHash: result.transactionHash,
                 amount: result.amount,
@@ -418,7 +420,7 @@ const WalletPage = ({ onClose }) => {
     const [currentBalance, setCurrentBalance] = useState(0);
     const [depositAddress, setDepositAddress] = useState('');
     const [loading, setLoading] = useState(true);
-    const [withdrawResult, setWithdrawResult] = useState(null);  // ✅ 출금 결과 저장
+    const [withdrawResult, setWithdrawResult] = useState(null);  //  출금 결과 저장
 
     useEffect(() => {
         const loadWalletData = async () => {
@@ -457,14 +459,14 @@ const WalletPage = ({ onClose }) => {
         }
     };
 
-    // ✅ 출금 성공 핸들러
+    // 출금 성공 핸들러
     const handleWithdrawSuccess = (result) => {
         setWithdrawResult(result);
         setCurrentView('Success');
         refreshBalance();  // 잔액 갱신
     };
 
-    // ✅ 성공 화면에서 닫기
+    // 성공 화면에서 닫기
     const handleSuccessClose = () => {
         setCurrentView('Main');
         setWithdrawResult(null);
@@ -493,10 +495,10 @@ const WalletPage = ({ onClose }) => {
             content = <WithdrawView 
                 onBack={() => handleViewChange('Main')} 
                 currentBalance={currentBalance}
-                onSuccess={handleWithdrawSuccess}  // ✅ 성공 핸들러 전달
+                onSuccess={handleWithdrawSuccess}  // 성공 핸들러 전달
             />;
             break;
-        case 'Success':  // ✅ 성공 화면 추가
+        case 'Success':  // 성공 화면 추가
             title = '출금 완료';
             content = withdrawResult && <WithdrawSuccessView 
                 onClose={handleSuccessClose}

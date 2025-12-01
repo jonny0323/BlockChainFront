@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FiX, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
 import { getFinalizableBets, finalizeBets } from '../services/api';
 
-// 스타일 변수
+// ============================================
+// 해당 화면 기본 세팅
+// ============================================
+
 const styles = {
     primaryColor: '#5c6bc0',
     secondaryColor: '#4caf50', 
@@ -13,7 +16,6 @@ const styles = {
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
 };
 
-// 재사용 가능한 버튼 스타일
 const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     padding: padding,
     borderRadius: '8px',
@@ -28,115 +30,9 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     justifyContent: 'center',
 });
 
-// ✅ 확정 성공 모달
-const FinalizeSuccessModal = ({ onClose, results }) => {
-    return (
-        <div style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 2000,
-        }}>
-            <div style={{
-                backgroundColor: styles.cardBgColor,
-                borderRadius: '15px',
-                width: '90%',
-                maxWidth: '500px',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-                overflow: 'hidden',
-            }}>
-                {/* Modal Header */}
-                <div style={{ padding: '20px 25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
-                        베팅 확정 완료
-                    </h2>
-                    <FiX style={{ fontSize: '20px', cursor: 'pointer', color: styles.statusGrey }} onClick={onClose} />
-                </div>
-
-                {/* Modal Content */}
-                <div style={{ padding: '25px', maxHeight: '60vh', overflowY: 'auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            borderRadius: '50%',
-                            backgroundColor: '#e8f5e9',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: '0 auto 20px'
-                        }}>
-                            <FiCheckCircle style={{ fontSize: '40px', color: styles.secondaryColor }} />
-                        </div>
-                        <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: styles.headerColor, marginBottom: '10px' }}>
-                            확정 완료!
-                        </h3>
-                        <p style={{ fontSize: '16px', color: styles.statusGrey }}>
-                            {results.length}개의 베팅이 성공적으로 확정되었습니다
-                        </p>
-                    </div>
-
-                    {/* 결과 목록 */}
-                    <div style={{ marginBottom: '20px' }}>
-                        {results.map((result, index) => (
-                            <div key={index} style={{
-                                backgroundColor: '#f9f9f9',
-                                padding: '15px',
-                                borderRadius: '8px',
-                                marginBottom: '10px'
-                            }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: styles.headerColor }}>
-                                        마켓 #{result.marketId}
-                                    </span>
-                                    <span style={{ 
-                                        fontSize: '12px', 
-                                        fontWeight: 'bold',
-                                        color: result.winner === 'Above' ? styles.secondaryColor : styles.dangerColor
-                                    }}>
-                                        {result.winner === 'Above' ? 'YES 승리 ⬆️' : 'NO 승리 ⬇️'}
-                                    </span>
-                                </div>
-                                
-                                <div style={{ fontSize: '12px', color: styles.statusGrey, marginBottom: '8px' }}>
-                                    <div>최종가: ${parseFloat(result.finalPrice).toLocaleString()}</div>
-                                    <div>목표가: ${parseFloat(result.targetPrice).toLocaleString()}</div>
-                                </div>
-
-                                <a 
-                                    href={`https://polygonscan.com/tx/${result.transactionHash}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ 
-                                        fontSize: '12px', 
-                                        color: styles.primaryColor,
-                                        textDecoration: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '5px'
-                                    }}
-                                >
-                                    <FiExternalLink size={12} />
-                                    트랜잭션 확인
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-
-                    <button 
-                        style={{ ...buttonStyle(styles.primaryColor, 'white', '12px 25px'), width: '100%' }} 
-                        onClick={onClose}
-                    >
-                        확인
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
+// ============================================
+// 함수들
+// ============================================
 
 // 베팅 항목 카드 컴포넌트
 const ResolveBetItem = ({ bet, onToggle, isSelected }) => {
@@ -264,7 +160,6 @@ const ResolveBetPage = ({ onClose, onSuccess }) => {
         try {
             const response = await finalizeBets(selectedBetIds);
             
-            console.log('✅ 확정 완료:', response);
 
             // 성공 모달 표시
             setFinalizeResults(response.results);
@@ -396,7 +291,7 @@ const ResolveBetPage = ({ onClose, onSuccess }) => {
                 </div>
             </div>
 
-            {/* ✅ 성공 모달 */}
+            {/* 성공 모달 */}
             {finalizeResults && (
                 <FinalizeSuccessModal
                     onClose={handleCloseSuccessModal}
@@ -404,6 +299,120 @@ const ResolveBetPage = ({ onClose, onSuccess }) => {
                 />
             )}
         </>
+    );
+};
+
+// ============================================
+// 추가 페이지
+// ============================================
+
+// 확정 성공 모달
+const FinalizeSuccessModal = ({ onClose, results }) => {
+    return (
+        <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 2000,
+        }}>
+            <div style={{
+                backgroundColor: styles.cardBgColor,
+                borderRadius: '15px',
+                width: '90%',
+                maxWidth: '500px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+                overflow: 'hidden',
+            }}>
+                {/* Modal Header */}
+                <div style={{ padding: '20px 25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: styles.headerColor }}>
+                        베팅 확정 완료
+                    </h2>
+                    <FiX style={{ fontSize: '20px', cursor: 'pointer', color: styles.statusGrey }} onClick={onClose} />
+                </div>
+
+                {/* Modal Content */}
+                <div style={{ padding: '25px', maxHeight: '60vh', overflowY: 'auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '50%',
+                            backgroundColor: '#e8f5e9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 20px'
+                        }}>
+                            <FiCheckCircle style={{ fontSize: '40px', color: styles.secondaryColor }} />
+                        </div>
+                        <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: styles.headerColor, marginBottom: '10px' }}>
+                            확정 완료!
+                        </h3>
+                        <p style={{ fontSize: '16px', color: styles.statusGrey }}>
+                            {results.length}개의 베팅이 성공적으로 확정되었습니다
+                        </p>
+                    </div>
+
+                    {/* 결과 목록 */}
+                    <div style={{ marginBottom: '20px' }}>
+                        {results.map((result, index) => (
+                            <div key={index} style={{
+                                backgroundColor: '#f9f9f9',
+                                padding: '15px',
+                                borderRadius: '8px',
+                                marginBottom: '10px'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: styles.headerColor }}>
+                                        마켓 #{result.marketId}
+                                    </span>
+                                    <span style={{ 
+                                        fontSize: '12px', 
+                                        fontWeight: 'bold',
+                                        color: result.winner === 'Above' ? styles.secondaryColor : styles.dangerColor
+                                    }}>
+                                        {result.winner === 'Above' ? 'YES 승리 ⬆️' : 'NO 승리 ⬇️'}
+                                    </span>
+                                </div>
+                                
+                                <div style={{ fontSize: '12px', color: styles.statusGrey, marginBottom: '8px' }}>
+                                    <div>최종가: ${parseFloat(result.finalPrice).toLocaleString()}</div>
+                                    <div>목표가: ${parseFloat(result.targetPrice).toLocaleString()}</div>
+                                </div>
+
+                                <a 
+                                    href={`https://polygonscan.com/tx/${result.transactionHash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ 
+                                        fontSize: '12px', 
+                                        color: styles.primaryColor,
+                                        textDecoration: 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px'
+                                    }}
+                                >
+                                    <FiExternalLink size={12} />
+                                    트랜잭션 확인
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button 
+                        style={{ ...buttonStyle(styles.primaryColor, 'white', '12px 25px'), width: '100%' }} 
+                        onClick={onClose}
+                    >
+                        확인
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };
 

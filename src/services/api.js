@@ -1,7 +1,10 @@
 // src/services/api.js
 const API_URL = 'https://blockchainbetting.duckdns.org';
 
-// ✅ API 호출 헬퍼 함수 (에러 핸들링 포함)
+// ============================================
+// API 호출 헬퍼 함수
+// ============================================
+
 const apiCall = async (url, options = {}) => {
     try {
         const response = await fetch(url, options);
@@ -37,17 +40,18 @@ const apiCall = async (url, options = {}) => {
     }
 };
 
-// Google 로그인
+// ============================================
+// 로그인 및 인증 관련
+// ============================================
+
 export const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/user/login`;
 };
 
-// 로그인 여부 체크
 export const isLoggedIn = () => {
     return !!localStorage.getItem('token');
 };
 
-// ✅ 관리자 여부 체크
 export const isAdmin = () => {
     const token = localStorage.getItem('token');
     if (!token) return false;
@@ -62,7 +66,6 @@ export const isAdmin = () => {
     }
 };
 
-// 로그아웃
 export const handleLogout = async () => {
     const token = localStorage.getItem('token');
     

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';  // ✅ useEffect 추가
+import React, { useState, useEffect } from 'react';  
 import { FaTwitter, FaYoutube, FaDiscord } from 'react-icons/fa';
 import { FiPlus, FiCheckCircle } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -6,7 +6,10 @@ import ResolveBetPage from './ResolveBetPage';
 import WalletPage from './WalletPage';
 import { getWallet, handleLogout, isLoggedIn, isAdmin, getMainData } from '../services/api.js'
 
-// 기본 색상 및 스타일 변수
+// ============================================
+// 해당 화면 기본 세팅
+// ============================================
+
 const styles = {
     bitcoin : '#ff9900',
     primaryColor: '#5c6bc0',
@@ -33,7 +36,10 @@ const buttonStyle = (backgroundColor, color, padding = '10px 20px') => ({
     justifyContent: 'center'
 });
 
-// ✅ Header에 관리자 체크 추가
+// ============================================
+// 메인 헤더
+// ============================================
+
 const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) => {
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
@@ -61,7 +67,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
                 Betting DApp
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                {/* ✅ 관리자만 Create 버튼 보이기 */}
+                {/* 관리자만 Create 버튼 보이기 */}
                 {userIsAdmin && (
                     <Link to="/create" style={{ textDecoration: 'none' }}>
                         <button style={{ ...buttonStyle(styles.primaryColor, 'white', '8px 15px') }}>
@@ -70,7 +76,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
                     </Link>
                 )}
                 
-                {/* ✅ 관리자만 확정하기 버튼 보이기 */}
+                {/* 관리자만 확정하기 버튼 보이기 */}
                 {userIsAdmin && (
                     <button 
                         style={{ ...buttonStyle(styles.secondaryColor, 'white', '8px 15px') }}
@@ -80,7 +86,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
                     </button>
                 )}
                 
-                {/* ✅ 로그인한 사용자만 지갑 버튼 보이기 */}
+                {/* 로그인한 사용자만 지갑 버튼 보이기 */}
                 {userIsLoggedIn && (
                     <button 
                         style={{
@@ -102,7 +108,7 @@ const Header = ({ onResolveClick, onWalletClick, balance, onRefreshBalance }) =>
                     </button>
                 )}
 
-                {/* ✅ 로그인 여부에 따라 Logout/Login 버튼 */}
+                {/* 로그인 여부에 따라 Logout/Login 버튼 */}
                 {userIsLoggedIn ? (
                     <button 
                         style={{ ...buttonStyle('#ccc', 'black', '8px 15px') }}
@@ -135,7 +141,7 @@ const BettingCard = ({ idx, title, smartDeadline, smartBetting, participants, to
         width: '30%',
         minWidth: '350px',
     }}>
-        {/* ✅ 제목 한 줄로 표시 */}
+        {/* 제목 한 줄로 표시 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#333', flex: 1 }}>
                 {title}
@@ -178,7 +184,7 @@ const BettingCard = ({ idx, title, smartDeadline, smartBetting, participants, to
     </div>
 );
 
-// ✅ BettingListSection에서 props 수정
+// BettingListSection에서 props 수정
 const BettingListSection = () => {
     const [bets, setBets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -224,7 +230,7 @@ const BettingListSection = () => {
                             <BettingCard 
                                 key={bet.idx}
                                 idx={bet.idx}
-                                title={bet.title}  // ✅ 제목 그대로 전달
+                                title={bet.title}  
                                 smartDeadline={new Date(bet.settlementTime).toLocaleDateString('ko-KR')}
                                 smartBetting={parseFloat(bet.yesOdds)}
                                 participants={bet.participantCount}
@@ -285,13 +291,13 @@ const Footer = () => (
     </footer>
 );
 
-// ✅ Main Component
+// Main Component
 const MainPage = () => {
     const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
     const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
     const [balance, setBalance] = useState(null);
 
-    // ✅ 잔액 로드
+    // 잔액 로드
     useEffect(() => {
         if (isLoggedIn()) {
             loadBalance();
@@ -308,7 +314,7 @@ const MainPage = () => {
         }
     };
 
-    // ✅ 지갑 모달 닫을 때 잔액 갱신
+    // 지갑 모달 닫을 때 잔액 갱신
     const handleWalletClose = () => {
         setIsWalletModalOpen(false);
         loadBalance();

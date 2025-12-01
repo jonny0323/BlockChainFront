@@ -1,25 +1,26 @@
 import React from 'react';
-// 아이콘 라이브러리 사용을 가정합니다. (실제 프로젝트에서 설치 필요: npm install react-icons)
 import { FiTrendingUp, FiLock, FiDollarSign, FiSmartphone } from 'react-icons/fi';
 import { FaTwitter, FaYoutube, FaDiscord } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import bitcoinImg from '../assets/images/bitcoin_img.png';
 // import { handleGoogleLogin, isLoggedIn } from '../services/api';
 import { handleGoogleLogin, isLoggedIn } from '../services/api';
-import { useNavigate } from 'react-router-dom';  // ✅ 추가
+import { useNavigate } from 'react-router-dom';  
 
-// 기본 색상 및 스타일 변수 (CSS 파일이나 Styled Components로 분리하는 것이 이상적입니다)
+// ============================================
+// 해당 화면 기본 세팅
+// ============================================
+
 const styles = {
     bitcoin : '#ff9900',
-    primaryColor: '#8a2be2', // BlueViolet 계열
-    secondaryColor: '#9370db', // MediumPurple 계열
-    bgColor: '#1c0a3c', // Dark Purple Background
-    cardColor: 'rgba(255, 255, 255, 0.08)', // Light semi-transparent for cards
-    gradientBg: 'linear-gradient(180deg, #3c0c7a, #1c0a3c)', // Deep purple gradient
+    primaryColor: '#8a2be2',
+    secondaryColor: '#9370db', 
+    bgColor: '#1c0a3c', 
+    cardColor: 'rgba(255, 255, 255, 0.08)', 
+    gradientBg: 'linear-gradient(180deg, #3c0c7a, #1c0a3c)', 
     padding: '80px 5%',
     maxWidth: '1200px',
 };
-// 재사용 가능한 버튼 스타일
 const buttonStyle = (backgroundColor, color, isPrimary = false) => ({
     padding: '10px 20px',
     borderRadius: '8px',
@@ -31,7 +32,10 @@ const buttonStyle = (backgroundColor, color, isPrimary = false) => ({
     transition: 'background-color 0.3s'
 });
 
-// 1. Header Component
+// ============================================
+// 메인 헤더
+// ============================================
+
 const Header = () => {
     const navigate = useNavigate();
 
@@ -106,7 +110,6 @@ const HeroSection = () => {
                     <p style={{ fontSize: '20px', marginBottom: '40px', maxWidth: '500px' }}>
                         비트코인의 가격을 예측하는 탈중앙화 배팅 플랫폼입니다. 
                     </p>
-                    {/* ✅ Link 제거하고 onClick 추가 */}
                     <button 
                         onClick={handleStartClick}
                         style={{ 
@@ -383,7 +386,6 @@ const LoginPage = () => {
                 <CallToActionSection />
             </main>
             <Footer />
-            {/* Talk with Us 버튼은 실제로는 Floating Button 컴포넌트가 필요합니다. */}
         </div>
     );
 };

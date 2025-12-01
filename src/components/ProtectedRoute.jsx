@@ -3,7 +3,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { isLoggedIn } from '../services/api';
 
-// ✅ 로그인 필수 라우트
+// 로그인 필수 라우트
 export const ProtectedRoute = ({ children }) => {
     if (!isLoggedIn()) {
         alert('로그인이 필요합니다.');
@@ -13,7 +13,7 @@ export const ProtectedRoute = ({ children }) => {
     return children;
 };
 
-// ✅ 관리자 전용 라우트
+// 관리자 전용 라우트
 export const AdminRoute = ({ children }) => {
     if (!isLoggedIn()) {
         alert('로그인이 필요합니다.');
@@ -31,7 +31,7 @@ export const AdminRoute = ({ children }) => {
     return children;
 };
 
-// ✅ JWT에서 관리자 여부 확인
+// JWT에서 관리자 여부 확인
 const checkAdminStatus = () => {
     const token = localStorage.getItem('token');
     if (!token) return false;
